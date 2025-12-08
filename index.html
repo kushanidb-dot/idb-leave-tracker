@@ -13,7 +13,7 @@
             --secondary: #64748b;
             --danger: #dc2626;
             --success: #16a34a;
-            --warning: #f59e0b; /* For Edit Button */
+            --warning: #f59e0b; 
             --bg: #f8fafc;
             --card-bg: #ffffff;
             --text: #1e293b;
@@ -28,32 +28,30 @@
         h2 { color: var(--secondary); margin: 5px 0 0 0; font-weight: 500; font-size: 1.2rem; }
         .year-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; vertical-align: middle; }
 
-        /* --- Forms & Inputs --- */
+        /* Forms */
         .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 4px solid var(--primary); }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end; }
         .form-group { display: flex; flex-direction: column; }
         label { font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #475569; }
         input, select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; }
-        input:focus { outline: 2px solid var(--primary); border-color: transparent; }
         
         /* Buttons */
         button { cursor: pointer; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; transition: 0.2s; font-size: 14px; }
         .btn-add { background-color: var(--primary); color: white; width: 100%; }
-        .btn-add:hover { background-color: #0c3b66; }
         .btn-export { background-color: var(--success); color: white; }
         .btn-reset { background-color: var(--danger); color: white; }
+        .btn-backup { background-color: #4f46e5; color: white; } /* Indigo for backup */
+        .btn-restore { background-color: #8b5cf6; color: white; } /* Violet for restore */
         
         /* Search Bar */
-        .search-container { margin-bottom: 15px; position: relative; }
-        .search-input { width: 100%; padding: 12px; padding-left: 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .search-container { margin-bottom: 15px; }
+        .search-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
 
-        /* --- Main Table --- */
+        /* Table */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; color: #475569; letter-spacing: 0.5px; }
-        tr:hover { background-color: #f8fafc; }
-
-        /* Balances & Text Colors */
+        th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; color: #475569; }
+        
         .bal-container { display: flex; flex-direction: column; line-height: 1.2; }
         .bal-main { font-weight: bold; font-size: 1.1em; }
         .bal-sub { font-size: 0.75em; color: #94a3b8; }
@@ -61,33 +59,21 @@
         .text-red { color: var(--danger); }
         .text-epf { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); }
 
-        /* Action Buttons */
         .action-row { display: flex; gap: 5px; }
         .btn-manage { background-color: var(--secondary); color: white; padding: 6px 10px; font-size: 0.8em; }
         .btn-edit { background-color: var(--warning); color: #fff; padding: 6px 10px; font-size: 0.8em; } 
         .btn-del { background-color: #fee2e2; color: var(--danger); padding: 6px 10px; font-size: 0.8em; }
-        .btn-del:hover { background-color: var(--danger); color: white; }
 
-        /* --- MODALS --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5); z-index: 1000;
-            justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 600px;
-            border-radius: 8px; padding: 25px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            max-height: 90vh; overflow-y: auto;
-        }
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 8px; padding: 25px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
-        .close-modal { background: none; color: #94a3b8; font-size: 24px; padding: 0; }
-        .close-modal:hover { color: var(--danger); }
+        .close-modal { background: none; color: #94a3b8; font-size: 24px; padding: 0; cursor: pointer;}
 
-        /* History List */
         .add-leave-box { background: #f0f9ff; padding: 15px; border-radius: 6px; border: 1px solid #bae6fd; display: flex; gap: 10px; align-items: end; margin-bottom: 20px; }
         .history-list { list-style: none; padding: 0; margin: 0; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        
         .tag { padding: 2px 8px; border-radius: 12px; font-size: 0.7em; text-transform: uppercase; font-weight: bold; }
         .tag-annual { background: #dbeafe; color: #1e40af; }
         .tag-casual { background: #fef3c7; color: #92400e; }
@@ -95,7 +81,8 @@
         .btn-del-date { background: none; color: var(--danger); text-decoration: underline; font-size: 0.8em; padding: 0; }
 
         /* Toolbar */
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 5px; }
     </style>
 </head>
 <body>
@@ -137,9 +124,13 @@
 
     <div class="toolbar">
         <h3 style="margin:0;">Staff Directory</h3>
-        <div>
-            <button class="btn-export" onclick="exportPDF()">Download IDB Report (PDF)</button>
-            <button class="btn-reset" onclick="resetAllData()">Reset System</button>
+        <div class="btn-group">
+            <input type="file" id="restoreInput" style="display: none;" onchange="importData(this)">
+            
+            <button class="btn-backup" onclick="backupData()">💾 Backup Data</button>
+            <button class="btn-restore" onclick="document.getElementById('restoreInput').click()">📂 Restore Data</button>
+            <button class="btn-export" onclick="exportPDF()">📄 Download PDF</button>
+            <button class="btn-reset" onclick="resetAllData()">🗑️ Reset</button>
         </div>
     </div>
 
@@ -225,15 +216,12 @@
 </div>
 
 <script>
-    // --- Data Management ---
     let staffData = [];
     let currentStaffId = null; 
     let editStaffId = null;
 
     window.onload = function() {
-        // Set Year dynamically
         document.getElementById('displayYear').textContent = new Date().getFullYear();
-
         const stored = localStorage.getItem('idb_leave_app_v3');
         if (stored) {
             staffData = JSON.parse(stored);
@@ -247,16 +235,50 @@
         if(currentStaffId !== null) renderHistoryList(currentStaffId);
     }
 
+    // --- NEW BACKUP FUNCTIONS ---
+    function backupData() {
+        const dataStr = JSON.stringify(staffData, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        
+        a.href = url;
+        a.download = `IDB_Backup_${date}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function importData(inputElement) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (confirm(`Restore data from ${file.name}? This will replace current data.`)) {
+                    staffData = importedData;
+                    saveData();
+                    alert("Data restored successfully!");
+                }
+            } catch (err) {
+                alert("Error: Invalid backup file.");
+            }
+            inputElement.value = ''; // Reset input
+        };
+        reader.readAsText(file);
+    }
+
     // --- Core Logic ---
     function addStaff(e) {
         e.preventDefault();
         const epf = document.getElementById('epf').value.trim();
-        
         if(staffData.some(s => s.epf === epf)) {
-            alert('Error: A staff member with this EPF Number already exists.'); 
+            alert('Error: EPF Number already exists.'); 
             return;
         }
-
         const newStaff = {
             id: Date.now(),
             epf: epf,
@@ -268,41 +290,38 @@
             },
             history: { annual: [], casual: [], medical: [] }
         };
-
         staffData.push(newStaff);
         document.getElementById('addStaffForm').reset();
         saveData();
     }
 
     function deleteStaff(id) {
-        if(confirm("Are you sure you want to permanently delete this staff member?")) {
+        if(confirm("Permanently delete this staff member?")) {
             staffData = staffData.filter(s => s.id !== id);
             saveData();
         }
     }
 
     function resetAllData() {
-        if(confirm("WARNING: This will wipe ALL staff data. This cannot be undone. Proceed?")) {
+        if(confirm("WARNING: This will wipe ALL data. Proceed?")) {
             localStorage.removeItem('idb_leave_app_v3');
             staffData = [];
             renderTable();
         }
     }
 
-    // --- Search Functionality ---
     function filterTable() {
         const input = document.getElementById("searchInput");
         const filter = input.value.toUpperCase();
         const table = document.getElementById("staffTable");
         const tr = table.getElementsByTagName("tr");
-
         for (let i = 1; i < tr.length; i++) {
             const tdEPF = tr[i].getElementsByTagName("td")[0];
             const tdName = tr[i].getElementsByTagName("td")[1];
             if (tdEPF || tdName) {
-                const txtValueEPF = tdEPF.textContent || tdEPF.innerText;
-                const txtValueName = tdName.textContent || tdName.innerText;
-                if (txtValueEPF.toUpperCase().indexOf(filter) > -1 || txtValueName.toUpperCase().indexOf(filter) > -1) {
+                const txt1 = tdEPF.textContent || tdEPF.innerText;
+                const txt2 = tdName.textContent || tdName.innerText;
+                if (txt1.toUpperCase().indexOf(filter) > -1 || txt2.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
@@ -311,34 +330,28 @@
         }
     }
 
-    // --- Edit Staff Logic ---
     function openEditModal(id) {
         editStaffId = id;
         const staff = staffData.find(s => s.id === id);
-        
         document.getElementById('editEpf').value = staff.epf;
         document.getElementById('editName').value = staff.name;
         document.getElementById('editAnnual').value = staff.limits.annual;
         document.getElementById('editCasual').value = staff.limits.casual;
         document.getElementById('editMedical').value = staff.limits.medical;
-
         document.getElementById('editModal').style.display = 'flex';
     }
 
     function saveEditStaff() {
         if (editStaffId === null) return;
         const staff = staffData.find(s => s.id === editStaffId);
-
         staff.name = document.getElementById('editName').value;
         staff.limits.annual = parseInt(document.getElementById('editAnnual').value);
         staff.limits.casual = parseInt(document.getElementById('editCasual').value);
         staff.limits.medical = parseInt(document.getElementById('editMedical').value);
-
         saveData();
         closeModal('editModal');
     }
 
-    // --- Leave History Logic ---
     function openLeaveModal(id) {
         currentStaffId = id;
         const staff = staffData.find(s => s.id === id);
@@ -358,16 +371,12 @@
         if (currentStaffId === null) return;
         const dateVal = document.getElementById('leaveDateInput').value;
         const typeVal = document.getElementById('leaveTypeInput').value;
-
         if (!dateVal) { alert("Please select a date"); return; }
         const staff = staffData.find(s => s.id === currentStaffId);
-        
-        // Check Limit
         if (staff.history[typeVal].length >= staff.limits[typeVal]) {
             alert(`Limit Reached! Cannot add more ${typeVal} leave.`);
             return;
         }
-
         staff.history[typeVal].push(dateVal);
         staff.history[typeVal].sort();
         saveData();
@@ -384,7 +393,6 @@
         const staff = staffData.find(s => s.id === id);
         const listEl = document.getElementById('historyList');
         const emptyMsg = document.getElementById('noHistoryMsg');
-        
         listEl.innerHTML = '';
         let allLeaves = [];
         ['annual', 'casual', 'medical'].forEach(type => {
@@ -392,8 +400,6 @@
                 allLeaves.push({ date, type, index });
             });
         });
-
-        // Sort descending (newest first)
         allLeaves.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         if (allLeaves.length > 0) {
@@ -401,13 +407,7 @@
             allLeaves.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
-                li.innerHTML = `
-                    <div>
-                        <span class="tag tag-${item.type}">${item.type}</span>
-                        <span style="margin-left:10px; font-weight:500;">${item.date}</span>
-                    </div>
-                    <button class="btn-del-date" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>
-                `;
+                li.innerHTML = `<div><span class="tag tag-${item.type}">${item.type}</span> <span style="margin-left:10px; font-weight:500;">${item.date}</span></div> <button class="btn-del-date" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>`;
                 listEl.appendChild(li);
             });
         } else {
@@ -415,22 +415,18 @@
         }
     }
 
-    // --- Main Table Rendering ---
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-
         if(staffData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No staff records found. Add a staff member to begin.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No staff records found.</td></tr>';
             return;
         }
-
         staffData.forEach(staff => {
             const tr = document.createElement('tr');
             const annBal = staff.limits.annual - staff.history.annual.length;
             const casBal = staff.limits.casual - staff.history.casual.length;
             const medBal = staff.limits.medical - staff.history.medical.length;
-
             tr.innerHTML = `
                 <td class="text-epf">${staff.epf}</td>
                 <td style="font-weight:600;">${staff.name}</td>
@@ -445,8 +441,6 @@
             `;
             tbody.appendChild(tr);
         });
-        
-        // Re-apply filter if text exists
         filterTable();
     }
 
@@ -454,59 +448,25 @@
         let colorClass = 'text-green';
         if (bal === 0) colorClass = 'text-red';
         else if (bal <= 2) colorClass = 'text-red'; 
-
-        return `
-            <div class="bal-container">
-                <span class="bal-main ${colorClass}">${bal} Left</span>
-                <span class="bal-sub">Limit: ${limit}</span>
-            </div>
-        `;
+        return `<div class="bal-container"><span class="bal-main ${colorClass}">${bal} Left</span><span class="bal-sub">Limit: ${limit}</span></div>`;
     }
 
-    // --- Export PDF ---
     async function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const year = new Date().getFullYear();
-
         const tableColumn = ["EPF", "Name", "Annual (Bal/Lim)", "Casual (Bal/Lim)", "Medical (Bal/Lim)"];
         const tableRows = [];
-
         staffData.forEach(staff => {
             const annBal = staff.limits.annual - staff.history.annual.length;
             const casBal = staff.limits.casual - staff.history.casual.length;
             const medBal = staff.limits.medical - staff.history.medical.length;
-
-            const rowData = [
-                staff.epf,
-                staff.name,
-                `${annBal} / ${staff.limits.annual}`,
-                `${casBal} / ${staff.limits.casual}`,
-                `${medBal} / ${staff.limits.medical}`,
-            ];
-            tableRows.push(rowData);
+            tableRows.push([staff.epf, staff.name, `${annBal} / ${staff.limits.annual}`, `${casBal} / ${staff.limits.casual}`, `${medBal} / ${staff.limits.medical}`]);
         });
-
-        // Letterhead
-        doc.setFontSize(16);
-        doc.setTextColor(15, 76, 129); // IDB Blue
-        doc.text("INDUSTRIAL DEVELOPMENT BOARD", 14, 15);
-        
-        doc.setFontSize(11);
-        doc.setTextColor(100);
-        doc.text(`Marketing Division - Staff Leave Report ${year}`, 14, 22);
-        
-        doc.setFontSize(9);
-        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
-
-        doc.autoTable({
-            head: [tableColumn],
-            body: tableRows,
-            startY: 32,
-            theme: 'grid',
-            headStyles: { fillColor: [15, 76, 129] }
-        });
-
+        doc.setFontSize(16); doc.setTextColor(15, 76, 129); doc.text("INDUSTRIAL DEVELOPMENT BOARD", 14, 15);
+        doc.setFontSize(11); doc.setTextColor(100); doc.text(`Marketing Division - Staff Leave Report ${year}`, 14, 22);
+        doc.setFontSize(9); doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+        doc.autoTable({ head: [tableColumn], body: tableRows, startY: 32, theme: 'grid', headStyles: { fillColor: [15, 76, 129] } });
         doc.save(`IDB_Marketing_Leaves_${year}.pdf`);
     }
 </script>
