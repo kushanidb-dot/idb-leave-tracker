@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDB Marketing Division - Leave Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0f4c81; /* IDB-like Blue */
+            --secondary: #64748b;
+            --danger: #dc2626;
+            --success: #16a34a;
+            --warning: #f59e0b; /* For Edit Button */
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Headers */
+        .header-section { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+        h1 { color: var(--primary); margin: 0; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        h2 { color: var(--secondary); margin: 5px 0 0 0; font-weight: 500; font-size: 1.2rem; }
+        .year-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; vertical-align: middle; }
+
+        /* --- Forms & Inputs --- */
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 4px solid var(--primary); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #475569; }
+        input, select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; }
+        input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        
+        /* Buttons */
+        button { cursor: pointer; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; transition: 0.2s; font-size: 14px; }
+        .btn-add { background-color: var(--primary); color: white; width: 100%; }
+        .btn-add:hover { background-color: #0c3b66; }
+        .btn-export { background-color: var(--success); color: white; }
+        .btn-reset { background-color: var(--danger); color: white; }
+        
+        /* Search Bar */
+        .search-container { margin-bottom: 15px; position: relative; }
+        .search-input { width: 100%; padding: 12px; padding-left: 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+        /* --- Main Table --- */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; color: #475569; letter-spacing: 0.5px; }
+        tr:hover { background-color: #f8fafc; }
+
+        /* Balances & Text Colors */
+        .bal-container { display: flex; flex-direction: column; line-height: 1.2; }
+        .bal-main { font-weight: bold; font-size: 1.1em; }
+        .bal-sub { font-size: 0.75em; color: #94a3b8; }
+        .text-green { color: var(--success); }
+        .text-red { color: var(--danger); }
+        .text-epf { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); }
+
+        /* Action Buttons */
+        .action-row { display: flex; gap: 5px; }
+        .btn-manage { background-color: var(--secondary); color: white; padding: 6px 10px; font-size: 0.8em; }
+        .btn-edit { background-color: var(--warning); color: #fff; padding: 6px 10px; font-size: 0.8em; } 
+        .btn-del { background-color: #fee2e2; color: var(--danger); padding: 6px 10px; font-size: 0.8em; }
+        .btn-del:hover { background-color: var(--danger); color: white; }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 600px;
+            border-radius: 8px; padding: 25px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
+        .close-modal { background: none; color: #94a3b8; font-size: 24px; padding: 0; }
+        .close-modal:hover { color: var(--danger); }
+
+        /* History List */
+        .add-leave-box { background: #f0f9ff; padding: 15px; border-radius: 6px; border: 1px solid #bae6fd; display: flex; gap: 10px; align-items: end; margin-bottom: 20px; }
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        .tag { padding: 2px 8px; border-radius: 12px; font-size: 0.7em; text-transform: uppercase; font-weight: bold; }
+        .tag-annual { background: #dbeafe; color: #1e40af; }
+        .tag-casual { background: #fef3c7; color: #92400e; }
+        .tag-medical { background: #fee2e2; color: #991b1b; }
+        .btn-del-date { background: none; color: var(--danger); text-decoration: underline; font-size: 0.8em; padding: 0; }
+
+        /* Toolbar */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h1>Industrial Development Board</h1>
+        <h2>Marketing Division - Leave Tracker <span class="year-badge" id="displayYear">2025</span></h2>
+    </div>
+
+    <div class="card">
+        <h3>Add New Staff Member</h3>
+        <form id="addStaffForm" onsubmit="addStaff(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>EPF No</label>
+                    <input type="text" id="epf" required placeholder="e.g., 1001">
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="name" required placeholder="Staff Name">
+                </div>
+                <div class="form-group">
+                    <label>Annual Limit</label>
+                    <input type="number" id="annualLimit" required value="14" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Casual Limit</label>
+                    <input type="number" id="casualLimit" required value="7" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Medical Limit</label>
+                    <input type="number" id="medicalLimit" required value="14" min="0">
+                </div>
+                <button type="submit" class="btn-add">Create Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="toolbar">
+        <h3 style="margin:0;">Staff Directory</h3>
+        <div>
+            <button class="btn-export" onclick="exportPDF()">Download IDB Report (PDF)</button>
+            <button class="btn-reset" onclick="resetAllData()">Reset System</button>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" onkeyup="filterTable()" placeholder="Search by Staff Name or EPF Number...">
+    </div>
+
+    <table id="staffTable">
+        <thead>
+            <tr>
+                <th width="10%">EPF</th>
+                <th width="20%">Name</th>
+                <th width="15%">Annual</th>
+                <th width="15%">Casual</th>
+                <th width="15%">Medical</th>
+                <th width="20%">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<div id="leaveModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Manage Leaves</h2>
+            <button class="close-modal" onclick="closeModal('leaveModal')">&times;</button>
+        </div>
+
+        <div class="add-leave-box">
+            <div class="form-group" style="flex:1">
+                <label>Date</label>
+                <input type="date" id="leaveDateInput">
+            </div>
+            <div class="form-group" style="flex:1">
+                <label>Type</label>
+                <select id="leaveTypeInput">
+                    <option value="annual">Annual Leave</option>
+                    <option value="casual">Casual Leave</option>
+                    <option value="medical">Medical Leave</option>
+                </select>
+            </div>
+            <button class="btn-add" style="width: auto;" onclick="addLeaveToHistory()">+ Add</button>
+        </div>
+
+        <h3>Leave History</h3>
+        <ul id="historyList" class="history-list"></ul>
+        <div id="noHistoryMsg" style="text-align:center; color:#999; margin-top:20px;">No leaves taken yet.</div>
+    </div>
+</div>
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Staff Details</h2>
+            <button class="close-modal" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="form-group">
+                <label>EPF (Read Only)</label>
+                <input type="text" id="editEpf" disabled style="background:#f1f5f9;">
+            </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>Annual Limit</label>
+                <input type="number" id="editAnnual" min="0">
+            </div>
+            <div class="form-group">
+                <label>Casual Limit</label>
+                <input type="number" id="editCasual" min="0">
+            </div>
+            <div class="form-group">
+                <label>Medical Limit</label>
+                <input type="number" id="editMedical" min="0">
+            </div>
+        </div>
+        <br>
+        <button class="btn-add" onclick="saveEditStaff()">Save Changes</button>
+    </div>
+</div>
+
+<script>
+    // --- Data Management ---
+    let staffData = [];
+    let currentStaffId = null; 
+    let editStaffId = null;
+
+    window.onload = function() {
+        // Set Year dynamically
+        document.getElementById('displayYear').textContent = new Date().getFullYear();
+
+        const stored = localStorage.getItem('idb_leave_app_v3');
+        if (stored) {
+            staffData = JSON.parse(stored);
+        }
+        renderTable();
+    };
+
+    function saveData() {
+        localStorage.setItem('idb_leave_app_v3', JSON.stringify(staffData));
+        renderTable();
+        if(currentStaffId !== null) renderHistoryList(currentStaffId);
+    }
+
+    // --- Core Logic ---
+    function addStaff(e) {
+        e.preventDefault();
+        const epf = document.getElementById('epf').value.trim();
+        
+        if(staffData.some(s => s.epf === epf)) {
+            alert('Error: A staff member with this EPF Number already exists.'); 
+            return;
+        }
+
+        const newStaff = {
+            id: Date.now(),
+            epf: epf,
+            name: document.getElementById('name').value,
+            limits: {
+                annual: parseInt(document.getElementById('annualLimit').value),
+                casual: parseInt(document.getElementById('casualLimit').value),
+                medical: parseInt(document.getElementById('medicalLimit').value)
+            },
+            history: { annual: [], casual: [], medical: [] }
+        };
+
+        staffData.push(newStaff);
+        document.getElementById('addStaffForm').reset();
+        saveData();
+    }
+
+    function deleteStaff(id) {
+        if(confirm("Are you sure you want to permanently delete this staff member?")) {
+            staffData = staffData.filter(s => s.id !== id);
+            saveData();
+        }
+    }
+
+    function resetAllData() {
+        if(confirm("WARNING: This will wipe ALL staff data. This cannot be undone. Proceed?")) {
+            localStorage.removeItem('idb_leave_app_v3');
+            staffData = [];
+            renderTable();
+        }
+    }
+
+    // --- Search Functionality ---
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("staffTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            const tdEPF = tr[i].getElementsByTagName("td")[0];
+            const tdName = tr[i].getElementsByTagName("td")[1];
+            if (tdEPF || tdName) {
+                const txtValueEPF = tdEPF.textContent || tdEPF.innerText;
+                const txtValueName = tdName.textContent || tdName.innerText;
+                if (txtValueEPF.toUpperCase().indexOf(filter) > -1 || txtValueName.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // --- Edit Staff Logic ---
+    function openEditModal(id) {
+        editStaffId = id;
+        const staff = staffData.find(s => s.id === id);
+        
+        document.getElementById('editEpf').value = staff.epf;
+        document.getElementById('editName').value = staff.name;
+        document.getElementById('editAnnual').value = staff.limits.annual;
+        document.getElementById('editCasual').value = staff.limits.casual;
+        document.getElementById('editMedical').value = staff.limits.medical;
+
+        document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function saveEditStaff() {
+        if (editStaffId === null) return;
+        const staff = staffData.find(s => s.id === editStaffId);
+
+        staff.name = document.getElementById('editName').value;
+        staff.limits.annual = parseInt(document.getElementById('editAnnual').value);
+        staff.limits.casual = parseInt(document.getElementById('editCasual').value);
+        staff.limits.medical = parseInt(document.getElementById('editMedical').value);
+
+        saveData();
+        closeModal('editModal');
+    }
+
+    // --- Leave History Logic ---
+    function openLeaveModal(id) {
+        currentStaffId = id;
+        const staff = staffData.find(s => s.id === id);
+        document.getElementById('modalTitle').innerText = `${staff.name} (EPF: ${staff.epf})`;
+        document.getElementById('leaveDateInput').valueAsDate = new Date();
+        renderHistoryList(id);
+        document.getElementById('leaveModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        if(modalId === 'leaveModal') currentStaffId = null;
+        if(modalId === 'editModal') editStaffId = null;
+    }
+
+    function addLeaveToHistory() {
+        if (currentStaffId === null) return;
+        const dateVal = document.getElementById('leaveDateInput').value;
+        const typeVal = document.getElementById('leaveTypeInput').value;
+
+        if (!dateVal) { alert("Please select a date"); return; }
+        const staff = staffData.find(s => s.id === currentStaffId);
+        
+        // Check Limit
+        if (staff.history[typeVal].length >= staff.limits[typeVal]) {
+            alert(`Limit Reached! Cannot add more ${typeVal} leave.`);
+            return;
+        }
+
+        staff.history[typeVal].push(dateVal);
+        staff.history[typeVal].sort();
+        saveData();
+    }
+
+    function deleteLeaveDate(id, type, dateIndex) {
+        if(!confirm("Remove this leave entry?")) return;
+        const staff = staffData.find(s => s.id === id);
+        staff.history[type].splice(dateIndex, 1);
+        saveData();
+    }
+
+    function renderHistoryList(id) {
+        const staff = staffData.find(s => s.id === id);
+        const listEl = document.getElementById('historyList');
+        const emptyMsg = document.getElementById('noHistoryMsg');
+        
+        listEl.innerHTML = '';
+        let allLeaves = [];
+        ['annual', 'casual', 'medical'].forEach(type => {
+            staff.history[type].forEach((date, index) => {
+                allLeaves.push({ date, type, index });
+            });
+        });
+
+        // Sort descending (newest first)
+        allLeaves.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        if (allLeaves.length > 0) {
+            emptyMsg.style.display = 'none';
+            allLeaves.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <div>
+                        <span class="tag tag-${item.type}">${item.type}</span>
+                        <span style="margin-left:10px; font-weight:500;">${item.date}</span>
+                    </div>
+                    <button class="btn-del-date" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>
+                `;
+                listEl.appendChild(li);
+            });
+        } else {
+            emptyMsg.style.display = 'block';
+        }
+    }
+
+    // --- Main Table Rendering ---
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if(staffData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No staff records found. Add a staff member to begin.</td></tr>';
+            return;
+        }
+
+        staffData.forEach(staff => {
+            const tr = document.createElement('tr');
+            const annBal = staff.limits.annual - staff.history.annual.length;
+            const casBal = staff.limits.casual - staff.history.casual.length;
+            const medBal = staff.limits.medical - staff.history.medical.length;
+
+            tr.innerHTML = `
+                <td class="text-epf">${staff.epf}</td>
+                <td style="font-weight:600;">${staff.name}</td>
+                <td>${formatBalance(annBal, staff.limits.annual)}</td>
+                <td>${formatBalance(casBal, staff.limits.casual)}</td>
+                <td>${formatBalance(medBal, staff.limits.medical)}</td>
+                <td class="action-row">
+                    <button class="btn-manage" onclick="openLeaveModal(${staff.id})">Leaves</button>
+                    <button class="btn-edit" onclick="openEditModal(${staff.id})">Edit</button>
+                    <button class="btn-del" onclick="deleteStaff(${staff.id})">&times;</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        // Re-apply filter if text exists
+        filterTable();
+    }
+
+    function formatBalance(bal, limit) {
+        let colorClass = 'text-green';
+        if (bal === 0) colorClass = 'text-red';
+        else if (bal <= 2) colorClass = 'text-red'; 
+
+        return `
+            <div class="bal-container">
+                <span class="bal-main ${colorClass}">${bal} Left</span>
+                <span class="bal-sub">Limit: ${limit}</span>
+            </div>
+        `;
+    }
+
+    // --- Export PDF ---
+    async function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const year = new Date().getFullYear();
+
+        const tableColumn = ["EPF", "Name", "Annual (Bal/Lim)", "Casual (Bal/Lim)", "Medical (Bal/Lim)"];
+        const tableRows = [];
+
+        staffData.forEach(staff => {
+            const annBal = staff.limits.annual - staff.history.annual.length;
+            const casBal = staff.limits.casual - staff.history.casual.length;
+            const medBal = staff.limits.medical - staff.history.medical.length;
+
+            const rowData = [
+                staff.epf,
+                staff.name,
+                `${annBal} / ${staff.limits.annual}`,
+                `${casBal} / ${staff.limits.casual}`,
+                `${medBal} / ${staff.limits.medical}`,
+            ];
+            tableRows.push(rowData);
+        });
+
+        // Letterhead
+        doc.setFontSize(16);
+        doc.setTextColor(15, 76, 129); // IDB Blue
+        doc.text("INDUSTRIAL DEVELOPMENT BOARD", 14, 15);
+        
+        doc.setFontSize(11);
+        doc.setTextColor(100);
+        doc.text(`Marketing Division - Staff Leave Report ${year}`, 14, 22);
+        
+        doc.setFontSize(9);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 32,
+            theme: 'grid',
+            headStyles: { fillColor: [15, 76, 129] }
+        });
+
+        doc.save(`IDB_Marketing_Leaves_${year}.pdf`);
+    }
+</script>
+
+</body>
+</html>
