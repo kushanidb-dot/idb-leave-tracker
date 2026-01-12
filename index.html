@@ -20,7 +20,7 @@
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1250px; margin: 0 auto; }
         
         /* Headers */
         .header-section { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
@@ -30,7 +30,7 @@
 
         /* Forms */
         .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 4px solid var(--primary); }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: end; }
         .form-group { display: flex; flex-direction: column; }
         label { font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #475569; }
         input, select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; }
@@ -49,12 +49,12 @@
 
         /* Table */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; color: #475569; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; color: #475569; }
         
         .bal-container { display: flex; flex-direction: column; line-height: 1.2; }
-        .bal-main { font-weight: bold; font-size: 1.1em; }
-        .bal-sub { font-size: 0.75em; color: #94a3b8; }
+        .bal-main { font-weight: bold; font-size: 1.05em; }
+        .bal-sub { font-size: 0.7em; color: #94a3b8; }
         .text-green { color: var(--success); }
         .text-red { color: var(--danger); }
         .text-epf { font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); }
@@ -66,7 +66,7 @@
 
         /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 8px; padding: 25px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 650px; border-radius: 8px; padding: 25px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
         .close-modal { background: none; color: #94a3b8; font-size: 24px; padding: 0; cursor: pointer;}
 
@@ -78,6 +78,7 @@
         .tag-annual { background: #dbeafe; color: #1e40af; }
         .tag-casual { background: #fef3c7; color: #92400e; }
         .tag-medical { background: #fee2e2; color: #991b1b; }
+        .tag-pre-annual { background: #f3e8ff; color: #6b21a8; }
         .btn-del-date { background: none; color: var(--danger); text-decoration: underline; font-size: 0.8em; padding: 0; }
 
         /* Toolbar */
@@ -117,6 +118,10 @@
                     <label>Medical Limit</label>
                     <input type="number" id="medicalLimit" required value="14" min="0">
                 </div>
+                <div class="form-group">
+                    <label>Pre Annual Limit</label>
+                    <input type="number" id="preAnnualLimit" required value="2" min="0">
+                </div>
                 <button type="submit" class="btn-add">Create Profile</button>
             </div>
         </form>
@@ -141,12 +146,13 @@
     <table id="staffTable">
         <thead>
             <tr>
-                <th width="10%">EPF</th>
-                <th width="20%">Name</th>
-                <th width="15%">Annual</th>
-                <th width="15%">Casual</th>
-                <th width="15%">Medical</th>
-                <th width="20%">Actions</th>
+                <th width="8%">EPF</th>
+                <th width="18%">Name</th>
+                <th width="13%">Annual</th>
+                <th width="13%">Casual</th>
+                <th width="13%">Medical</th>
+                <th width="13%">Pre Annual</th>
+                <th width="22%">Actions</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -171,6 +177,7 @@
                     <option value="annual">Annual Leave</option>
                     <option value="casual">Casual Leave</option>
                     <option value="medical">Medical Leave</option>
+                    <option value="preAnnual">Pre Annual Leave</option>
                 </select>
             </div>
             <button class="btn-add" style="width: auto;" onclick="addLeaveToHistory()">+ Add</button>
@@ -209,6 +216,10 @@
                 <label>Medical Limit</label>
                 <input type="number" id="editMedical" min="0">
             </div>
+            <div class="form-group">
+                <label>Pre Annual Limit</label>
+                <input type="number" id="editPreAnnual" min="0">
+            </div>
         </div>
         <br>
         <button class="btn-add" onclick="saveEditStaff()">Save Changes</button>
@@ -235,7 +246,7 @@
         if(currentStaffId !== null) renderHistoryList(currentStaffId);
     }
 
-    // --- NEW BACKUP FUNCTIONS ---
+    // --- BACKUP FUNCTIONS ---
     function backupData() {
         const dataStr = JSON.stringify(staffData, null, 2);
         const blob = new Blob([dataStr], { type: "application/json" });
@@ -286,9 +297,10 @@
             limits: {
                 annual: parseInt(document.getElementById('annualLimit').value),
                 casual: parseInt(document.getElementById('casualLimit').value),
-                medical: parseInt(document.getElementById('medicalLimit').value)
+                medical: parseInt(document.getElementById('medicalLimit').value),
+                preAnnual: parseInt(document.getElementById('preAnnualLimit').value)
             },
-            history: { annual: [], casual: [], medical: [] }
+            history: { annual: [], casual: [], medical: [], preAnnual: [] }
         };
         staffData.push(newStaff);
         document.getElementById('addStaffForm').reset();
@@ -338,6 +350,7 @@
         document.getElementById('editAnnual').value = staff.limits.annual;
         document.getElementById('editCasual').value = staff.limits.casual;
         document.getElementById('editMedical').value = staff.limits.medical;
+        document.getElementById('editPreAnnual').value = staff.limits.preAnnual || 0;
         document.getElementById('editModal').style.display = 'flex';
     }
 
@@ -348,6 +361,7 @@
         staff.limits.annual = parseInt(document.getElementById('editAnnual').value);
         staff.limits.casual = parseInt(document.getElementById('editCasual').value);
         staff.limits.medical = parseInt(document.getElementById('editMedical').value);
+        staff.limits.preAnnual = parseInt(document.getElementById('editPreAnnual').value);
         saveData();
         closeModal('editModal');
     }
@@ -373,6 +387,10 @@
         const typeVal = document.getElementById('leaveTypeInput').value;
         if (!dateVal) { alert("Please select a date"); return; }
         const staff = staffData.find(s => s.id === currentStaffId);
+        
+        if (!staff.history[typeVal]) staff.history[typeVal] = [];
+        if (!staff.limits[typeVal]) staff.limits[typeVal] = 0;
+
         if (staff.history[typeVal].length >= staff.limits[typeVal]) {
             alert(`Limit Reached! Cannot add more ${typeVal} leave.`);
             return;
@@ -395,10 +413,12 @@
         const emptyMsg = document.getElementById('noHistoryMsg');
         listEl.innerHTML = '';
         let allLeaves = [];
-        ['annual', 'casual', 'medical'].forEach(type => {
-            staff.history[type].forEach((date, index) => {
-                allLeaves.push({ date, type, index });
-            });
+        ['annual', 'casual', 'medical', 'preAnnual'].forEach(type => {
+            if (staff.history[type]) {
+                staff.history[type].forEach((date, index) => {
+                    allLeaves.push({ date, type, index });
+                });
+            }
         });
         allLeaves.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -407,7 +427,8 @@
             allLeaves.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
-                li.innerHTML = `<div><span class="tag tag-${item.type}">${item.type}</span> <span style="margin-left:10px; font-weight:500;">${item.date}</span></div> <button class="btn-del-date" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>`;
+                const tagLabel = item.type === 'preAnnual' ? 'Pre Annual' : item.type;
+                li.innerHTML = `<div><span class="tag tag-${item.type}">${tagLabel}</span> <span style="margin-left:10px; font-weight:500;">${item.date}</span></div> <button class="btn-del-date" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>`;
                 listEl.appendChild(li);
             });
         } else {
@@ -419,20 +440,23 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         if(staffData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No staff records found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#94a3b8;">No staff records found.</td></tr>';
             return;
         }
         staffData.forEach(staff => {
             const tr = document.createElement('tr');
-            const annBal = staff.limits.annual - staff.history.annual.length;
-            const casBal = staff.limits.casual - staff.history.casual.length;
-            const medBal = staff.limits.medical - staff.history.medical.length;
+            const annBal = staff.limits.annual - (staff.history.annual?.length || 0);
+            const casBal = staff.limits.casual - (staff.history.casual?.length || 0);
+            const medBal = staff.limits.medical - (staff.history.medical?.length || 0);
+            const preBal = (staff.limits.preAnnual || 0) - (staff.history.preAnnual?.length || 0);
+            
             tr.innerHTML = `
                 <td class="text-epf">${staff.epf}</td>
                 <td style="font-weight:600;">${staff.name}</td>
                 <td>${formatBalance(annBal, staff.limits.annual)}</td>
                 <td>${formatBalance(casBal, staff.limits.casual)}</td>
                 <td>${formatBalance(medBal, staff.limits.medical)}</td>
+                <td>${formatBalance(preBal, staff.limits.preAnnual || 0)}</td>
                 <td class="action-row">
                     <button class="btn-manage" onclick="openLeaveModal(${staff.id})">Leaves</button>
                     <button class="btn-edit" onclick="openEditModal(${staff.id})">Edit</button>
@@ -447,26 +471,42 @@
     function formatBalance(bal, limit) {
         let colorClass = 'text-green';
         if (bal === 0) colorClass = 'text-red';
-        else if (bal <= 2) colorClass = 'text-red'; 
-        return `<div class="bal-container"><span class="bal-main ${colorClass}">${bal} Left</span><span class="bal-sub">Limit: ${limit}</span></div>`;
+        else if (bal <= 1) colorClass = 'text-red'; 
+        return `<div class="bal-container"><span class="bal-main ${colorClass}">${bal} Left</span><span class="bal-sub">Lim: ${limit}</span></div>`;
     }
 
     async function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const year = new Date().getFullYear();
-        const tableColumn = ["EPF", "Name", "Annual (Bal/Lim)", "Casual (Bal/Lim)", "Medical (Bal/Lim)"];
+        const tableColumn = ["EPF", "Name", "Annual", "Casual", "Medical", "Pre Annual"];
         const tableRows = [];
         staffData.forEach(staff => {
-            const annBal = staff.limits.annual - staff.history.annual.length;
-            const casBal = staff.limits.casual - staff.history.casual.length;
-            const medBal = staff.limits.medical - staff.history.medical.length;
-            tableRows.push([staff.epf, staff.name, `${annBal} / ${staff.limits.annual}`, `${casBal} / ${staff.limits.casual}`, `${medBal} / ${staff.limits.medical}`]);
+            const annBal = staff.limits.annual - (staff.history.annual?.length || 0);
+            const casBal = staff.limits.casual - (staff.history.casual?.length || 0);
+            const medBal = staff.limits.medical - (staff.history.medical?.length || 0);
+            const preBal = (staff.limits.preAnnual || 0) - (staff.history.preAnnual?.length || 0);
+            
+            tableRows.push([
+                staff.epf, 
+                staff.name, 
+                `${annBal}/${staff.limits.annual}`, 
+                `${casBal}/${staff.limits.casual}`, 
+                `${medBal}/${staff.limits.medical}`,
+                `${preBal}/${staff.limits.preAnnual || 0}`
+            ]);
         });
         doc.setFontSize(16); doc.setTextColor(15, 76, 129); doc.text("INDUSTRIAL DEVELOPMENT BOARD", 14, 15);
         doc.setFontSize(11); doc.setTextColor(100); doc.text(`Marketing Division - Staff Leave Report ${year}`, 14, 22);
         doc.setFontSize(9); doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
-        doc.autoTable({ head: [tableColumn], body: tableRows, startY: 32, theme: 'grid', headStyles: { fillColor: [15, 76, 129] } });
+        doc.autoTable({ 
+            head: [tableColumn], 
+            body: tableRows, 
+            startY: 32, 
+            theme: 'grid', 
+            headStyles: { fillColor: [15, 76, 129] },
+            styles: { fontSize: 8 }
+        });
         doc.save(`IDB_Marketing_Leaves_${year}.pdf`);
     }
 </script>
