@@ -215,21 +215,21 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div class="form-group">
                             <label>Annual Lim</label>
-                            <input type="number" id="annualLimit" required value="14" min="0">
+                            <input type="number" id="annualLimit" required value="14" min="0" step="0.5">
                         </div>
                         <div class="form-group">
                             <label>Casual Lim</label>
-                            <input type="number" id="casualLimit" required value="7" min="0">
+                            <input type="number" id="casualLimit" required value="7" min="0" step="0.5">
                         </div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div class="form-group">
                             <label>Medical Lim</label>
-                            <input type="number" id="medicalLimit" required value="14" min="0">
+                            <input type="number" id="medicalLimit" required value="14" min="0" step="0.5">
                         </div>
                         <div class="form-group">
                             <label>Pre Annual</label>
-                            <input type="number" id="preAnnualLimit" required value="2" min="0">
+                            <input type="number" id="preAnnualLimit" required value="2" min="0" step="0.5">
                         </div>
                     </div>
                     <button type="submit" class="btn-primary" style="margin-top: 10px;">Create Profile</button>
@@ -318,6 +318,13 @@
                         <option value="preAnnual">Pre Annual Leave</option>
                     </select>
                 </div>
+                <div style="flex: 1; min-width: 140px;">
+                    <label style="font-size: 0.65rem;">Day Type</label>
+                    <select id="leaveValueInput" style="width: 100%; box-sizing: border-box;">
+                        <option value="1">Full Day (1.0)</option>
+                        <option value="0.5">Half Day (0.5)</option>
+                    </select>
+                </div>
                 <button class="btn-primary" style="width: auto; height: 42px;" onclick="addLeaveToHistory()">+ Add Entry</button>
             </div>
         </div>
@@ -361,19 +368,19 @@
             </div>
             <div class="form-group">
                 <label>Annual Limit</label>
-                <input type="number" id="editAnnual">
+                <input type="number" id="editAnnual" step="0.5">
             </div>
             <div class="form-group">
                 <label>Casual Limit</label>
-                <input type="number" id="editCasual">
+                <input type="number" id="editCasual" step="0.5">
             </div>
             <div class="form-group">
                 <label>Medical Limit</label>
-                <input type="number" id="editMedical">
+                <input type="number" id="editMedical" step="0.5">
             </div>
             <div class="form-group">
                 <label>Pre Annual Limit</label>
-                <input type="number" id="editPreAnnual">
+                <input type="number" id="editPreAnnual" step="0.5">
             </div>
         </div>
         <button class="btn-primary" onclick="saveEditStaff()" style="margin-top: 15px;">Update Profile Information</button>
@@ -407,6 +414,15 @@
         if(currentStaffId !== null) renderHistoryList(currentStaffId);
     }
 
+    // Helper to calculate total taken from history array (handles migration from old strings)
+    function getTakenCount(historyArr) {
+        if (!historyArr) return 0;
+        return historyArr.reduce((acc, item) => {
+            if (typeof item === 'string') return acc + 1; // Backward compatibility
+            return acc + (parseFloat(item.value) || 1);
+        }, 0);
+    }
+
     function updateStats() {
         let totalLeaves = 0;
         let lowBalanceAlerts = [];
@@ -415,7 +431,7 @@
             let lowCategories = [];
             ['annual', 'casual', 'medical', 'preAnnual'].forEach(type => {
                 const limit = s.limits[type] || 0;
-                const taken = s.history[type]?.length || 0;
+                const taken = getTakenCount(s.history[type]);
                 const bal = limit - taken;
                 totalLeaves += taken;
                 if (limit > 0 && bal <= 1) {
@@ -428,7 +444,7 @@
         });
 
         document.getElementById('statStaffCount').textContent = staffData.length;
-        document.getElementById('statTotalLeaves').textContent = totalLeaves;
+        document.getElementById('statTotalLeaves').textContent = totalLeaves.toFixed(1);
         document.getElementById('statLowBalance').textContent = lowBalanceAlerts.length;
 
         renderAlerts(lowBalanceAlerts);
@@ -526,10 +542,10 @@
             epf: epf,
             name: document.getElementById('name').value,
             limits: {
-                annual: parseInt(document.getElementById('annualLimit').value),
-                casual: parseInt(document.getElementById('casualLimit').value),
-                medical: parseInt(document.getElementById('medicalLimit').value),
-                preAnnual: parseInt(document.getElementById('preAnnualLimit').value)
+                annual: parseFloat(document.getElementById('annualLimit').value),
+                casual: parseFloat(document.getElementById('casualLimit').value),
+                medical: parseFloat(document.getElementById('medicalLimit').value),
+                preAnnual: parseFloat(document.getElementById('preAnnualLimit').value)
             },
             history: { annual: [], casual: [], medical: [], preAnnual: [] }
         };
@@ -580,10 +596,10 @@
     function saveEditStaff() {
         const staff = staffData.find(s => s.id === editStaffId);
         staff.name = document.getElementById('editName').value;
-        staff.limits.annual = parseInt(document.getElementById('editAnnual').value);
-        staff.limits.casual = parseInt(document.getElementById('editCasual').value);
-        staff.limits.medical = parseInt(document.getElementById('editMedical').value);
-        staff.limits.preAnnual = parseInt(document.getElementById('editPreAnnual').value);
+        staff.limits.annual = parseFloat(document.getElementById('editAnnual').value);
+        staff.limits.casual = parseFloat(document.getElementById('editCasual').value);
+        staff.limits.medical = parseFloat(document.getElementById('editMedical').value);
+        staff.limits.preAnnual = parseFloat(document.getElementById('editPreAnnual').value);
         saveData();
         closeModal('editModal');
     }
@@ -597,6 +613,7 @@
         document.getElementById('leaveToDateInput').valueAsDate = new Date();
         document.getElementById('rangeToggle').checked = false;
         document.getElementById('historyMonthFilter').value = 'all';
+        document.getElementById('leaveValueInput').value = "1";
         toggleDateRange();
         renderHistoryList(id);
         document.getElementById('leaveModal').style.display = 'flex';
@@ -612,6 +629,7 @@
         const startDateVal = document.getElementById('leaveDateInput').value;
         const endDateVal = document.getElementById('leaveToDateInput').value;
         const typeVal = document.getElementById('leaveTypeInput').value;
+        const leaveVal = parseFloat(document.getElementById('leaveValueInput').value);
         const isRange = document.getElementById('rangeToggle').checked;
 
         if (!startDateVal) return;
@@ -631,24 +649,27 @@
         }
 
         if (!staff.history[typeVal]) staff.history[typeVal] = [];
-        if (staff.history[typeVal].length + datesToAdd.length > staff.limits[typeVal]) {
-            alert(`Limit exceeded! Remaining: ${staff.limits[typeVal] - staff.history[typeVal].length}`);
+        const currentTaken = getTakenCount(staff.history[typeVal]);
+        const addedValue = datesToAdd.length * leaveVal;
+
+        if (currentTaken + addedValue > staff.limits[typeVal]) {
+            alert(`Limit exceeded! Remaining: ${(staff.limits[typeVal] - currentTaken).toFixed(1)}`);
             return;
         }
 
         datesToAdd.forEach(d => {
-            if (!staff.history[typeVal].includes(d)) staff.history[typeVal].push(d);
+            staff.history[typeVal].push({ date: d, value: leaveVal });
         });
         
-        logActivity(staff.name, `${typeVal} (${datesToAdd.length}d)`);
-        staff.history[typeVal].sort();
+        logActivity(staff.name, `${typeVal} (${addedValue.toFixed(1)}d)`);
+        staff.history[typeVal].sort((a, b) => new Date(a.date) - new Date(b.date));
         saveData();
     }
 
-    function deleteLeaveDate(id, type, dateIndex) {
+    function deleteLeaveDate(id, type, entryIndex) {
         if(!confirm("Remove this entry?")) return;
         const staff = staffData.find(s => s.id === id);
-        staff.history[type].splice(dateIndex, 1);
+        staff.history[type].splice(entryIndex, 1);
         saveData();
     }
 
@@ -662,9 +683,11 @@
         let allLeaves = [];
         ['annual', 'casual', 'medical', 'preAnnual'].forEach(type => {
             if (staff.history[type]) {
-                staff.history[type].forEach((date, index) => {
-                    if (monthFilter === 'all' || date.split('-')[1] === monthFilter) {
-                        allLeaves.push({ date, type, index });
+                staff.history[type].forEach((item, index) => {
+                    const dateStr = typeof item === 'string' ? item : item.date;
+                    const val = typeof item === 'string' ? 1 : item.value;
+                    if (monthFilter === 'all' || dateStr.split('-')[1] === monthFilter) {
+                        allLeaves.push({ date: dateStr, type, value: val, index });
                     }
                 });
             }
@@ -679,7 +702,8 @@
                 const li = document.createElement('li');
                 li.className = 'history-item';
                 const label = item.type === 'preAnnual' ? 'Pre Annual' : item.type;
-                li.innerHTML = `<div><span class="tag tag-${item.type}">${label}</span> <span style="margin-left:12px; font-weight:600; font-size:0.9rem;">${item.date}</span></div> <button style="color:var(--danger); background:none; text-decoration:none; padding:0; font-size:0.75rem; cursor:pointer;" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>`;
+                const valSuffix = item.value < 1 ? ` (½ Day)` : '';
+                li.innerHTML = `<div><span class="tag tag-${item.type}">${label}</span> <span style="margin-left:12px; font-weight:600; font-size:0.9rem;">${item.date}${valSuffix}</span></div> <button style="color:var(--danger); background:none; text-decoration:none; padding:0; font-size:0.75rem; cursor:pointer;" onclick="deleteLeaveDate(${id}, '${item.type}', ${item.index})">Remove</button>`;
                 listEl.appendChild(li);
             });
         } else {
@@ -697,7 +721,8 @@
         staffData.forEach(staff => {
             let isLow = false;
             ['annual', 'casual', 'medical', 'preAnnual'].forEach(t => {
-                if(staff.limits[t] > 0 && (staff.limits[t] - (staff.history[t]?.length||0)) <= 1) isLow = true;
+                const bal = staff.limits[t] - getTakenCount(staff.history[t]);
+                if(staff.limits[t] > 0 && bal <= 1) isLow = true;
             });
 
             const tr = document.createElement('tr');
@@ -726,7 +751,7 @@
 
     function formatBalanceCell(staff, type) {
         const limit = staff.limits[type] || 0;
-        const taken = staff.history[type]?.length || 0;
+        const taken = getTakenCount(staff.history[type]);
         const bal = limit - taken;
         let statusClass = 'status-normal'; let fillClass = 'status-normal-fill';
         if (limit > 0 && bal <= 1) { statusClass = 'status-low'; fillClass = 'status-low-fill'; }
@@ -734,7 +759,7 @@
         const percent = limit > 0 ? (taken / limit) * 100 : 0;
         return `
             <div class="bal-badge">
-                <span class="bal-val ${statusClass}">${bal}</span>
+                <span class="bal-val ${statusClass}">${bal % 1 === 0 ? bal : bal.toFixed(1)}</span>
                 <span class="bal-lbl">of ${limit}</span>
                 <div class="progress-bg"><div class="progress-fill ${fillClass}" style="width: ${100 - percent}%"></div></div>
             </div>
@@ -747,10 +772,10 @@
         const year = new Date().getFullYear();
         const tableRows = staffData.map(s => [
             s.epf, s.name, 
-            `${s.limits.annual - (s.history.annual?.length||0)}/${s.limits.annual}`,
-            `${s.limits.casual - (s.history.casual?.length||0)}/${s.limits.casual}`,
-            `${s.limits.medical - (s.history.medical?.length||0)}/${s.limits.medical}`,
-            `${(s.limits.preAnnual||0) - (s.history.preAnnual?.length||0)}/${s.limits.preAnnual||0}`
+            `${(s.limits.annual - getTakenCount(s.history.annual)).toFixed(1)}/${s.limits.annual}`,
+            `${(s.limits.casual - getTakenCount(s.history.casual)).toFixed(1)}/${s.limits.casual}`,
+            `${(s.limits.medical - getTakenCount(s.history.medical)).toFixed(1)}/${s.limits.medical}`,
+            `${((s.limits.preAnnual||0) - getTakenCount(s.history.preAnnual)).toFixed(1)}/${s.limits.preAnnual||0}`
         ]);
         doc.setFontSize(18); doc.setTextColor(15, 76, 129); doc.text("INDUSTRIAL DEVELOPMENT BOARD", 14, 20);
         doc.setFontSize(12); doc.setTextColor(100); doc.text(`Marketing Division - Staff Leave Summary ${year}`, 14, 28);
@@ -765,12 +790,18 @@
         const doc = new jsPDF();
         let historyData = [];
         ['annual', 'casual', 'medical', 'preAnnual'].forEach(type => {
-            if (staff.history[type]) staff.history[type].forEach(date => historyData.push([date, type.toUpperCase()]));
+            if (staff.history[type]) {
+                staff.history[type].forEach(item => {
+                    const date = typeof item === 'string' ? item : item.date;
+                    const val = typeof item === 'string' ? 1.0 : item.value;
+                    historyData.push([date, type.toUpperCase(), val.toFixed(1)]);
+                });
+            }
         });
         historyData.sort((a,b) => new Date(b[0]) - new Date(a[0]));
         doc.setFontSize(18); doc.setTextColor(15, 76, 129); doc.text("STAFF LEAVE HISTORY", 14, 20);
         doc.setFontSize(11); doc.text(`Employee: ${staff.name}`, 14, 30); doc.text(`EPF: ${staff.epf}`, 14, 36);
-        doc.autoTable({ head: [["Date", "Category"]], body: historyData, startY: 45, theme: 'striped', headStyles: { fillColor: [15, 76, 129] } });
+        doc.autoTable({ head: [["Date", "Category", "Value"]], body: historyData, startY: 45, theme: 'striped', headStyles: { fillColor: [15, 76, 129] } });
         doc.save(`History_${staff.epf}_${staff.name.replace(/\s+/g, '_')}.pdf`);
     }
 </script>
